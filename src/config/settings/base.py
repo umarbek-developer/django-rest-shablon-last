@@ -16,7 +16,11 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 BASE_URL = env("BASE_URL")
 
-# AUTH_USER_MODEL = 'users.User'  # use our custom User model (not Django's)
+
+if DEBUG == "1":
+    DEBUG = True
+else:
+    DEBUG = False
 
 # Application definition
 
@@ -111,63 +115,6 @@ REST_FRAMEWORK = {
 }
 
 
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'Service API',
-    'DESCRIPTION': '',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    'SCHEMA_PATH_PREFIX_INSERT': '/api',
-    'ENUM_NAME_OVERRIDES': {
-    },
-    'SERVE_URLCONF': 'api.urls',
-    # OTHER SETTINGS
-    'COMPONENT_SPLIT_REQUEST': True
-}
-
-SPECTACULAR_SETTINGS_ADMIN = {
-    'TITLE': 'Service ADMIN API',
-    'DESCRIPTION': '',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    'SCHEMA_PATH_PREFIX_INSERT': '/api/admin',
-    'ENUM_NAME_OVERRIDES': {
-    },
-    'SERVE_URLCONF': 'api.admin.urls',
-    'DEFAULT_GENERATOR_CLASS': 'config.swaggers.custom_generator.CustomSchemaGenerator',
-    # OTHER SETTINGS
-}
-
-SPECTACULAR_SETTINGS_CLIENT = {
-    'TITLE': 'Service Client API',
-    'DESCRIPTION': '',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    'SCHEMA_PATH_PREFIX_INSERT': '/api/client',
-    'ENUM_NAME_OVERRIDES': {
-    },
-    'SERVE_URLCONF': 'api.client.urls',
-    'DEFAULT_GENERATOR_CLASS': 'config.swaggers.custom_generator.CustomSchemaGenerator',
-    # OTHER SETTINGS
-}
-
-SPECTACULAR_SETTINGS_MERCHANT = {
-    'TITLE': 'Service Merchant API',
-    'DESCRIPTION': '',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    'SCHEMA_PATH_PREFIX_INSERT': '/api/merchant',
-    'ENUM_NAME_OVERRIDES': {
-    },
-    'SERVE_URLCONF': 'api.merchant.urls',
-    'DEFAULT_GENERATOR_CLASS': 'config.swaggers.custom_generator.CustomSchemaGenerator',
-    # OTHER SETTINGS
-}
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -193,20 +140,33 @@ AUTH_USER_MODEL = 'users.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+DB_TYPE = env("DB_TYPE")
+DATABASES = {}
+if DB_TYPE == "psql":
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.postgresql",
+        "CONN_MAX_AGE": 60,
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT"),
+    }
+else:
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR + "/db.sqlite3",
+    }
 
-# CORS_REPLACE_HTTPS_REFERER = False
-# HOST_SCHEME = "https://"
-# SECURE_PROXY_SSL_HEADER = None
-# SECURE_SSL_REDIRECT = False
-# SESSION_COOKIE_SECURE = False
-# SECURE_HSTS_SECONDS = None
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = False
-# SECURE_FRAME_DENY = False
 
-CORS_ALLOW_CREDENTIALS = True
-# If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ORIGIN_ALLOW_ALL = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env("EMAIL_HOST")
+EMAIL_HOST_PASSWORD = env("EMAIL_PASSWORD") # Generate in Gmail
+
 # CELERY
 # CELERY_APP_NAME = ''
 #
